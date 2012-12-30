@@ -45,6 +45,10 @@ function handleMessage(event) {
         db.deleteSnippet(data.audienceName, data.snippetIndex);
         break;
 
+      case "openLink":
+        chrome.tabs.create({ url: data });
+        break;
+
       default:
         chrome.extension.sendMessage(message);
         break;

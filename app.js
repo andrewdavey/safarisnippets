@@ -150,6 +150,20 @@ ko.bindingHandlers.dropdown = {
     return data;
   };
 
+  App.prototype.anyClick = function(_, event) {
+    // We're running inside an sandboxed iframe which isn't
+    // allowed to target="_blank" hyperlinks. So we must
+    // cancel <a> clicks and send a message out to the extension
+    // script which is able to open a new tab for us.
+
+    if (event.srcElement.tagName.toUpperCase() !== "A") return true;
+    var href = event.srcElement.getAttribute("href") || "";
+    if (!href || !href.match(/^https?:/)) return true;
+
+    event.preventDefault();
+    this.sendMessage({ openLink: href });
+  };
+
   ko.applyBindings(new App());
 
 }());
