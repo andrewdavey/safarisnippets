@@ -1,5 +1,5 @@
 {
-  "name": "Safari Snippets",
+  "name": "Sales Safari",
   "version": "1.0",
   "manifest_version": 2,
   "description": "Capture snippets during sales safari",
@@ -17,7 +17,7 @@
     "default_title": "Sales Safari"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["db.js", "background.js"]
   },
   "sandbox": {
     "pages": ["app.html"]

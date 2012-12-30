@@ -1,31 +1,69 @@
-var sandbox = document.getElementById("sandbox").contentWindow;
+(function() {
 
-function updateSandbox() {
-  chrome.storage.local.get("captures", function(data) {
-    var captures = data.captures || [];
-    sandbox.postMessage({captures: captures}, "*");
+// App runs inside a sandboxed iframe.
+// It cannot access chrome APIs.
+// So all communication with it is done via messages.
+
+var appWindow = document.getElementById("app").contentWindow;
+
+function postMessageToApp(message) {
+  appWindow.postMessage(message, "*");
+}
+
+function handleMessage(event) {
+  var message = event.data;
+  Object.keys(message).forEach(function(key) {
+    var data = message[key];
+    switch (key) {
+      case "createAudience":
+        db.createAudience(data);
+        chrome.extension.sendMessage({ audienceCreated: true });
+        break;
+
+      case "deleteAudience":
+        db.deleteAudience(data);
+        chrome.extension.sendMessage({ audienceDeleted: true });
+        break;
+
+      case "activateAudience":
+        db.activateAudience(data);
+        chrome.extension.sendMessage({ audienceActivated: true });
+        break;
+
+      case "deactivateAudience":
+        db.deactivateAudience(data);
+        chrome.extension.sendMessage({ audienceDeactivated: true });
+        break;
+
+      case "getSnippets":
+        db.getAudience(data, function(audience) {
+          postMessageToApp({ snippets: audience.snippets });
+        });
+
+      default:
+        chrome.extension.sendMessage(message);
+        break;
+    }
   });
 }
 
-function save(captures) {
-  chrome.storage.local.set({captures: captures});
+function init() {
+  window.addEventListener("message", handleMessage, false);
+  
+  db.getAudiences(function(audiences) {
+    postMessageToApp({
+      init: { audiences: audiences }
+    });
+  });
+
+  chrome.extension.onMessage.addListener(function(message) {
+    if (message.snippetAdded) {
+      postMessageToApp(message);
+    }
+  });
 }
 
-setTimeout(updateSandbox, 500);
 
-window.addEventListener("message", function(event) {
-  if ("clear" in event.data) {
-    chrome.storage.local.remove("captures", updateSandbox);
-  } else if ("remove" in event.data) {
-    chrome.storage.local.get("captures", function(data) {
-      data.captures.splice(event.data.remove, 1);
-      save(data.captures);
-    });
-  } else if ("open" in event.data) {
-    window.open(event.data.open, "_blank");
-  }
-}, false);
+setTimeout(init, 500);
 
-chrome.storage.onChanged.addListener(function() {
-  updateSandbox();
-});
+}());

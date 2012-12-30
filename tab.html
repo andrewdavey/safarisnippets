@@ -3,11 +3,14 @@
 <head>
   <title>Sales Safari</title>
   <style type="text/css">
-  html, body { margin: 0 }
+  html, body { margin: 0; }
+  body { height: 100%; }
+  iframe { height: 100%; width: 100%; }
   </style>
 </head>
-<body style="height: 100%">
-  <iframe id="sandbox" src="app.html#home" style="width: 100%; height: 100%" seamless></iframe>
+<body>
+  <iframe id="app" src="app.html#home" seamless></iframe>
+  <script src="db.js"></script>
   <script src="tab.js"></script>
 </body>
 </html>

@@ -3,9 +3,9 @@
   <head>
    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"/> 
   </head>
-  <body>
+  <body style="padding-top: 10px">
 
-    <div class="container">
+    <div class="container" data-bind="if: page">
       <div class="row">
         <div class="span12" data-bind="template: { name: 'breadcrumbs', data: page().nav }"></div>
       </div>
@@ -32,39 +32,95 @@
         <a class="btn btn-primary btn-large" href="#new-audience">New Audience</a>
       </p>
     </div>
+
     <div data-bind="visible: audiences().length">
      <div class="row-fluid">
         <div class="span12">
-          <ul class="unstyled">
-            <!-- ko foreach: audiences -->
-            <li><a data-bind="text: name, attr: { href: '#audience/' + $index() }"></a></li>
-            <!-- /ko -->
-            <li><a href="#new-audience">New Audience</a></li>
-          </ul>
+          <table class="table table-hover" style="width: auto">
+            <thead>
+              <tr>
+                <th>Audience</th>
+                <th style="width: 100px"></th>
+                <th style="width: 60px"></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody data-bind="foreach: audiences">
+              <tr data-bind="css: { info: isActive }">
+                <td>
+                  <a data-bind="text: name, attr: { href: '#audience/' + $index() }"></a>
+                </td>
+                <td>
+                  <span class="label label-info" style="font-size: .8em" data-bind="visible: isActive">Active</span>
+                </td>
+                <td>
+                  <a href="#" style="font-size: .8em" data-bind="click: $parent.deactivateAudience, visible: isActive">Deactivate</a>
+                  <a href="#" style="font-size: .8em" data-bind="click: $parent.activateAudience, visible: !isActive()">Activate</a>
+                </td>
+                <td><a href="#" data-bind="click: $parent.deleteAudience" style="font-size: .8em; color: #800">Delete</a></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4">
+                  <a href="#new-audience"><i class="icon icon-plus-sign"></i> Create new audience</a>
+                </td>
+              </tr>
+          </table>
         </div>
       </div>
     </div>
     </script>
     
     <script id="new-audience" type="text/html">
-    <form class="form-horizontal" data-bind="submit: create">
-      <div class="control-group">
-        <label class="control-label">Audience name</label>
-        <div class="controls">
-          <input type="text" autofocus required data-bind="value: name"/>
+    <form data-bind="submit: create">
+      <fieldset>
+        <legend>Create new audience</legend>
+        <div class="control-group">
+          <label for="new-audience-name" class="control-label">Audience name</label>
+          <div class="controls">
+            <input id="new-audience-name" type="text" autofocus required data-bind="value: name"/>
+          </div>
         </div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-primary" type="submit">Create Audience</button>
-        <a class="btn" data-bind="click: cancel">Cancel</a>
-      </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Create Audience</button>
+          <a class="btn" data-bind="click: cancel">Cancel</a>
+        </div>
+      </fieldset>
     </form>
     </script>
 
     <script id="audience" type="text/html">
+      <div class="page-header">
+        <h1 data-bind="text: name"></h1>
+      </div>
+      <p data-bind="visible: !snippets().length">
+      No snippets collected yet. Right-click selected text while on safari...
+      </p>
+      <table class="table" data-bind="visible: snippets().length">
+        <thead>
+          <tr>
+            <th style="width: 130px">Type</th>
+            <th>Snippet</th>
+            <th style="width: 150px">Page</th>
+            <th style="width: 120px">Captured</th>
+            <th></th>
+          </tr>
+        <tbody data-bind="foreach: snippets">
+          <tr>
+            <td data-bind="text: type"></td>
+            <td data-bind="text: text"></td>
+            <td><a data-bind="text: page.title, attr: { href: page.url }"></a></td>
+            <td data-bind="text: time"></td>
+            <td><button class="btn btn-mini">Remove</button>
+          </tr>
+        </tbody>
+      </table>
     </script>
 
+    <script src="jquery.js"></script>
     <script src="knockout.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="Audience.js"></script>
     <script src="app.js"></script>
     
