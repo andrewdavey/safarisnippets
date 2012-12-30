@@ -59,7 +59,7 @@
             return false;
           }
         })
-        .filter(function(m) { return m; })
+        .filter(function(page) { return page; })
         [0];
     this.page(page);
   };
