@@ -46,7 +46,7 @@
             <tbody data-bind="foreach: audiences">
               <tr>
                 <td>
-                  <input type="checkbox" style="margin: 0 0 3px 2px" data-bind="checked: isActive"/>
+                  <input type="checkbox" title="Display audience in context menu for page selections" style="margin: 0 0 3px 2px" data-bind="checked: isActive"/>
                   <a data-bind="text: name, attr: { href: url }"></a>
                 </td>
                 <td><a href="#" title="Delete audience" data-bind="click: $parent.deleteAudience"><i class="icon icon-trash"></i></a></td>
