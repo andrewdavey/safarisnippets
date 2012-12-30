@@ -61,7 +61,13 @@ ko.bindingHandlers.dropdown = {
         { url: false, text: audienceName }
       ],
       name: audienceName,
-      snippets: app.snippets
+      snippets: app.snippets,
+
+      sortByType: function() {
+        var reversed = this.currentSort === "type";
+        this.currentSort = (reversed ? "-" : "") + "type";
+        this.snippets.sort(function(a,b) { return ((a.type < b.type) ? -1 : (a.type > b.type) ? 1 : 0) * (reversed ? -1 : 1); });
+      }
     };
   };
 
