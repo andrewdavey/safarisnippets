@@ -100,18 +100,18 @@
       <table class="table" data-bind="visible: snippets().length">
         <thead>
           <tr>
-            <th data-bind="click: sortByType" style="width: 130px">Type</th>
+            <th class="muted" data-bind="click: sortByType" style="width: 130px">Type</th>
             <th>Snippet</th>
             <th style="width: 150px">Page</th>
-            <th style="width: 120px">Captured</th>
+            <th class="muted" style="width: 120px">Captured</th>
             <th></th>
           </tr>
         <tbody data-bind="foreach: snippets">
           <tr>
-            <td data-bind="text: type"></td>
+            <td data-bind="text: type" class="muted"></td>
             <td data-bind="text: text"></td>
             <td><a data-bind="text: page.title, attr: { href: page.url }"></a></td>
-            <td data-bind="text: time"></td>
+            <td class="muted" data-bind="text: time"></td>
             <td><a href="#" title="Delete snippet" style="font-size: .8em; color: #800" data-bind="click: $parent.deleteSnippet"><i class="icon icon-trash"></i></a>
           </tr>
         </tbody>
