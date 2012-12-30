@@ -40,29 +40,21 @@
             <thead>
               <tr>
                 <th>Audience</th>
-                <th style="width: 100px"></th>
-                <th style="width: 60px"></th>
                 <th></th>
               </tr>
             </thead>
             <tbody data-bind="foreach: audiences">
-              <tr data-bind="css: { info: isActive }">
+              <tr>
                 <td>
-                  <a data-bind="text: name, attr: { href: '#audience/' + $index() }"></a>
+                  <input type="checkbox" style="margin: 0 0 3px 2px" data-bind="checked: isActive"/>
+                  <a data-bind="text: name, attr: { href: url }"></a>
                 </td>
-                <td>
-                  <span class="label label-info" style="font-size: .8em" data-bind="visible: isActive">Active</span>
-                </td>
-                <td>
-                  <a href="#" style="font-size: .8em" data-bind="click: $parent.deactivateAudience, visible: isActive">Deactivate</a>
-                  <a href="#" style="font-size: .8em" data-bind="click: $parent.activateAudience, visible: !isActive()">Activate</a>
-                </td>
-                <td><a href="#" data-bind="click: $parent.deleteAudience" style="font-size: .8em; color: #800">Delete</a></td>
+                <td><a href="#" title="Delete audience" data-bind="click: $parent.deleteAudience"><i class="icon icon-trash"></i></a></td>
               </tr>
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4">
+                <td colspan="2">
                   <a href="#new-audience"><i class="icon icon-plus-sign"></i> Create new audience</a>
                 </td>
               </tr>
@@ -100,7 +92,7 @@
       <table class="table" data-bind="visible: snippets().length">
         <thead>
           <tr>
-            <th class="muted" data-bind="click: sortByType" style="width: 130px">Type</th>
+            <th class="muted" data-bind="click: sortByType" style="width: 115px">Type</th>
             <th>Snippet</th>
             <th style="width: 150px">Page</th>
             <th class="muted" style="width: 120px">Captured</th>

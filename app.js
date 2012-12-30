@@ -38,10 +38,16 @@ ko.bindingHandlers.dropdown = {
       name: ko.observable(),
       create: function() {
         var name = this.name();
-        var audience = { name: name, isActive: ko.observable(true) };
+        var data = { name: name, isActive: true };
+        var audience = new AudienceViewModel(data);
         app.audiences.push(audience);
-        window.location = "#audience/" + (app.audiences().length-1);
-        app.sendMessage({ createAudience: {name: name, isActive: true} });
+        app.audiences.sort(function(a, b) {
+          a = a.name.toLowerCase();
+          b = b.name.toLowerCase();
+          return (a < b) ? -1 : (a > b) ? 1 : 0;
+        });
+        app.sendMessage({ createAudience: data });
+        window.location = "#audience/" + encodeURIComponent(name);
       },
       cancel: function() {
         history.back();
@@ -50,8 +56,7 @@ ko.bindingHandlers.dropdown = {
   };
 
   var AudiencePage = function(app, match) {
-    var id = parseInt(match[1], 10);
-    var audienceName = app.audiences()[id].name;
+    var audienceName = decodeURIComponent(match[1]);
     app.sendMessage({ getSnippets: audienceName });
 
     return {
@@ -91,7 +96,7 @@ ko.bindingHandlers.dropdown = {
     this.pages = [
       { url: /^#home/, page: HomePage },
       { url: /^#new-audience/, page: NewAudiencePage },
-      { url: /^#audience\/(\d+)/, page: AudiencePage }
+      { url: /^#audience\/(.+)/, page: AudiencePage }
     ];
 
     window.addEventListener("hashchange", this.onHashChange.bind(this), false);
@@ -117,11 +122,7 @@ ko.bindingHandlers.dropdown = {
   App.prototype.onMessage = function(event) {
     var message = event.data;
     if ("init" in message) {
-      this.parent = event.source;
-      this.audiences(event.data.init.audiences.map(function(a) {
-        return { name: a.name, isActive: ko.observable(a.isActive) };
-      }));
-      this.onHashChange();
+      this.init(event.source, event.data.init.audiences);
     } else if (message.snippets) {
       this.updateSnippets(event.data.snippets);
     } else if (message.snippetAdded) {
@@ -129,6 +130,20 @@ ko.bindingHandlers.dropdown = {
         this.snippets.push(this.snippet(message.snippetAdded, this.snippets().length));
       }
     }
+  };
+
+  App.prototype.init = function(parent, audiences) {
+    this.parent = parent;
+    audiences = audiences.map(function(a) {
+      return new AudienceViewModel(a, this);
+    }, this);
+    audiences.sort(function(a, b) {
+      a = a.name.toLowerCase();
+      b = b.name.toLowerCase();
+      return (a < b) ? -1 : (a > b) ? 1 : 0;
+    });
+    this.audiences(audiences);
+    this.onHashChange();
   };
 
   App.prototype.sendMessage = function(data) {
@@ -163,6 +178,19 @@ ko.bindingHandlers.dropdown = {
     event.preventDefault();
     this.sendMessage({ openLink: href });
   };
+
+  function AudienceViewModel(data, app) {
+    this.name = data.name;
+    this.url = "#audience/" + encodeURIComponent(data.name);
+    this.isActive = ko.observable(data.isActive);
+    this.isActive.subscribe(function(isActive) {
+      if (isActive) {
+        app.sendMessage({ activateAudience: this.name });
+      } else {
+        app.sendMessage({ deactivateAudience: this.name });
+      }
+    }, this);
+  }
 
   ko.applyBindings(new App());
 

@@ -16,23 +16,27 @@ function handleMessage(event) {
     var data = message[key];
     switch (key) {
       case "createAudience":
-        db.createAudience(data);
-        chrome.extension.sendMessage({ audienceCreated: true });
+        db.createAudience(data, function() {
+          chrome.extension.sendMessage({ audienceCreated: true });
+        });
         break;
 
       case "deleteAudience":
-        db.deleteAudience(data);
-        chrome.extension.sendMessage({ audienceDeleted: true });
+        db.deleteAudience(data, function() {
+          chrome.extension.sendMessage({ audienceDeleted: true });
+        });
         break;
 
       case "activateAudience":
-        db.activateAudience(data);
-        chrome.extension.sendMessage({ audienceActivated: true });
+        db.activateAudience(data, function() {
+          chrome.extension.sendMessage({ audienceActivated: true });
+        });
         break;
 
       case "deactivateAudience":
-        db.deactivateAudience(data);
-        chrome.extension.sendMessage({ audienceDeactivated: true });
+        db.deactivateAudience(data, function() {
+          chrome.extension.sendMessage({ audienceDeactivated: true });
+        });
         break;
 
       case "getSnippets":

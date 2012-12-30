@@ -12,11 +12,11 @@ var db = (function() {
     });
   }
 
-  function saveAudience(audience) {
+  function saveAudience(audience, callback) {
     var key = audienceKey(audience.name);
     var data = {};
     data[key] = audience;
-    storage.set(data);
+    storage.set(data, callback);
   }
 
   return {
@@ -41,7 +41,7 @@ var db = (function() {
 
     getAudience: getAudience,
 
-    createAudience: function(audience) {
+    createAudience: function(audience, callback) {
       var audience = {
         name: audience.name,
         isActive: audience.isActive,
@@ -49,11 +49,11 @@ var db = (function() {
       };
       var dataToSave = {};
       dataToSave[audienceKey(audience.name)] = audience;
-      storage.set(dataToSave);
+      storage.set(dataToSave, callback);
     },
 
-    deleteAudience: function(audienceName) {
-      storage.remove(audienceKey(audienceName));
+    deleteAudience: function(audienceName, callback) {
+      storage.remove(audienceKey(audienceName), callback);
     },
 
     addSnippet: function(audienceName, snippet) {
@@ -70,17 +70,17 @@ var db = (function() {
       });
     },
 
-    activateAudience: function(audienceName) {
+    activateAudience: function(audienceName, callback) {
       getAudience(audienceName, function(audience) {
         audience.isActive = true;
-        saveAudience(audience);
+        saveAudience(audience, callback);
       });
     },
 
-    deactivateAudience: function(audienceName) {
+    deactivateAudience: function(audienceName, callback) {
       getAudience(audienceName, function(audience) {
         audience.isActive = false;
-        saveAudience(audience);
+        saveAudience(audience, callback);
       });
     }
   };
