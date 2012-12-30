@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"/> 
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row">
+        <div class="span12" data-bind="template: { name: 'breadcrumbs', data: page().nav }"></div>
+      </div>
+      <div data-bind="template: { name: page().template, data: page }">
+      </div>
+    </div>
+
+    <script id="breadcrumbs" type="text/html">
+    <ul class="breadcrumb" data-bind="foreach: $data">
+    <!-- ko if: url -->
+    <li><a data-bind="text: text, attr: { href: url }"></a> <span class="divider">/</span></li>
+    <!-- /ko -->
+    <!-- ko ifnot: url -->
+    <li class="active" data-bind="text: text"></li>
+    <!-- /ko -->
+    </ul>
+    </script>
+
+    <script id="home" type="text/html">
+    <div class="hero-unit" data-bind="visible: !audiences().length">
+      <h1>Sales Safari</h1>
+      <p>Capture raw data from your watering holes</p>
+      <p>
+        <a class="btn btn-primary btn-large" href="#new-audience">New Audience</a>
+      </p>
+    </div>
+    <div data-bind="visible: audiences().length">
+     <div class="row-fluid">
+        <div class="span12">
+          <ul class="unstyled">
+            <!-- ko foreach: audiences -->
+            <li><a data-bind="text: name, attr: { href: '#audience/' + $index() }"></a></li>
+            <!-- /ko -->
+            <li><a href="#new-audience">New Audience</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    </script>
+    
+    <script id="new-audience" type="text/html">
+    <form class="form-horizontal" data-bind="submit: create">
+      <div class="control-group">
+        <label class="control-label">Audience name</label>
+        <div class="controls">
+          <input type="text" autofocus required data-bind="value: name"/>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Create Audience</button>
+        <a class="btn" data-bind="click: cancel">Cancel</a>
+      </div>
+    </form>
+    </script>
+
+    <script id="audience" type="text/html">
+    </script>
+
+    <script src="knockout.js"></script>
+    <script src="Audience.js"></script>
+    <script src="app.js"></script>
+    
+  </body>
+</html>
