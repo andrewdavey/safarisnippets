@@ -112,7 +112,7 @@
             <td data-bind="text: text"></td>
             <td><a data-bind="text: page.title, attr: { href: page.url }"></a></td>
             <td data-bind="text: time"></td>
-            <td><button class="btn btn-mini">Remove</button>
+            <td><a href="#" title="Delete snippet" style="font-size: .8em; color: #800" data-bind="click: $parent.deleteSnippet"><i class="icon icon-trash"></i></a>
           </tr>
         </tbody>
       </table>
@@ -121,7 +121,6 @@
     <script src="jquery.js"></script>
     <script src="knockout.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="Audience.js"></script>
     <script src="app.js"></script>
     
   </body>

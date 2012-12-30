@@ -39,6 +39,11 @@ function handleMessage(event) {
         db.getAudience(data, function(audience) {
           postMessageToApp({ snippets: audience.snippets });
         });
+        break;
+
+      case "deleteSnippet":
+        db.deleteSnippet(data.audienceName, data.snippetIndex);
+        break;
 
       default:
         chrome.extension.sendMessage(message);

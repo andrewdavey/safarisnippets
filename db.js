@@ -63,6 +63,13 @@ var db = (function() {
       });
     },
 
+    deleteSnippet: function(audienceName, snippetIndex) {
+      getAudience(audienceName, function(audience) {
+        audience.snippets.splice(snippetIndex, 1);
+        saveAudience(audience);
+      });
+    },
+
     activateAudience: function(audienceName) {
       getAudience(audienceName, function(audience) {
         audience.isActive = true;

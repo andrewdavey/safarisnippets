@@ -67,6 +67,16 @@ ko.bindingHandlers.dropdown = {
         var reversed = this.currentSort === "type";
         this.currentSort = (reversed ? "-" : "") + "type";
         this.snippets.sort(function(a,b) { return ((a.type < b.type) ? -1 : (a.type > b.type) ? 1 : 0) * (reversed ? -1 : 1); });
+      },
+
+      deleteSnippet: function(snippet) {
+        app.snippets.splice(snippet.id, 1);
+        app.sendMessage({
+          deleteSnippet: {
+            audienceName: audienceName,
+            snippetIndex: snippet.id
+          }
+        });
       }
     };
   };
@@ -116,7 +126,7 @@ ko.bindingHandlers.dropdown = {
       this.updateSnippets(event.data.snippets);
     } else if (message.snippetAdded) {
       if (this.page().name === message.snippetAdded.audienceName) {
-        this.snippets.push(this.snippet(message.snippetAdded));
+        this.snippets.push(this.snippet(message.snippetAdded, this.snippets().length));
       }
     }
   };
@@ -129,13 +139,14 @@ ko.bindingHandlers.dropdown = {
     this.snippets(snippets.map(this.snippet));
   };
 
-  App.prototype.snippet = function(data) {
+  App.prototype.snippet = function(data, index) {
     var date = new Date(Date.parse(data.time));
     function pad(number) {
       return number<10 ? ("0" + number.toString()) : number.toString();
     }
     data.time = [date.getFullYear(), pad(1+date.getMonth()), pad(date.getDate())].join("-") +
              " " + pad(date.getHours()) + ":" + pad(date.getMinutes());
+    data.id = index;
     return data;
   };
 
