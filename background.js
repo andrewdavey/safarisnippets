@@ -38,11 +38,36 @@ function createMenuHandlerFunction(audienceName, snippetType) {
       },
       time: new Date().toString()
     };
-    db.addSnippet(audienceName, snippet);
 
-    snippet.audienceName = audienceName;
-    chrome.extension.sendMessage({ snippetAdded: snippet });
+    var counter = (snippetType === "Keyword" || snippetType === "Jargon") ? countTextOccurances : countOne;
+    
+    function countOne(_, __, callback) {
+      callback(1);
+    }
+
+    counter(snippet.text, tab.id, function(count) {
+      snippet.count = count;
+      db.addSnippet(audienceName, snippet);
+
+      snippet.audienceName = audienceName;
+      chrome.extension.sendMessage({ snippetAdded: snippet });
+    });
   };
+}
+
+function countTextOccurances(text, tabId, callback) {
+  chrome.tabs.executeScript(
+    tabId,
+    {
+      code: "document.body.innerText"
+    },
+    function(results) {
+      results.forEach(function(result) {
+        var matches = result.match(new RegExp(text, "gi"));
+        callback(matches.length || 1);
+      });
+    }
+  );
 }
 
 initContextMenus();

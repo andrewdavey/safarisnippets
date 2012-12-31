@@ -101,7 +101,12 @@
         <tbody data-bind="foreach: snippets">
           <tr>
             <td data-bind="text: type" class="muted"></td>
-            <td data-bind="text: text"></td>
+            <td>
+              <span data-bind="text: text"></span>
+              <span data-bind="visible: count !== 1">
+              &times; <span data-bind="text: count"></span>
+              </span>
+            </td>
             <td><a data-bind="text: page.title, attr: { href: page.url }"></a></td>
             <td class="muted" data-bind="text: time"></td>
             <td><a href="#" title="Delete snippet" style="font-size: .8em; color: #800" data-bind="click: $parent.deleteSnippet"><i class="icon icon-trash"></i></a>
