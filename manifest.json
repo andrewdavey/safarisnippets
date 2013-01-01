@@ -1,5 +1,5 @@
 {
-  "name": "Sales Safari",
+  "name": "Sales Safari Snippets",
   "version": "1.0",
   "manifest_version": 2,
   "description": "Capture snippets during sales safari",
@@ -14,9 +14,10 @@
   ],
   "browser_action": {
     "default_icon": {
-     "19": "icon.png"
+     "19": "19.png",
+     "38": "38.png"
     },
-    "default_title": "Sales Safari"
+    "default_title": "View sales safari snippets"
   },
   "background": {
     "scripts": ["db.js", "background.js"]
