@@ -3,7 +3,7 @@ var NewAudiencePage = function(app) {
     template: "new-audience",
 
     nav: [
-      { url: "#home", text: "Sales Safari" },
+      { url: "#home", text: "Sales Safari Snippets" },
       { url: false, text: "New Audience" }
     ],
 

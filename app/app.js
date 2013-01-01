@@ -1,9 +1,5 @@
 (function() {
 
- 
-
-
-
   var App = function() {
     // app data
     this.audiences = ko.observableArray();

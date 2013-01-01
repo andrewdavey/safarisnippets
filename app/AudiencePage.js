@@ -6,7 +6,7 @@ var AudiencePage = function(app, match) {
     template: "audience",
 
     nav: [
-      { url: "#home", text: "Sales Safari" },
+      { url: "#home", text: "Sales Safari Snippets" },
       { url: false, text: audienceName }
     ],
 

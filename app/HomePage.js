@@ -3,7 +3,7 @@ var HomePage = function(app) {
     template: "home",
 
     nav: [
-      { url: false, text: "Sales Safari" }
+      { url: false, text: "Sales Safari Snippets" }
     ],
 
     audiences: app.audiences,
