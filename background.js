@@ -72,15 +72,18 @@ function countTextOccurances(text, tabId, callback) {
 
 initContextMenus();
 
+// Clicking the extension's browser action button
+// opens the snippet viewer tab.
 chrome.browserAction.onClicked.addListener(function() {
   chrome.tabs.create({url: "tab.html"});
 });
 
 
 chrome.extension.onMessage.addListener(function(message) {
-  if ("audienceActivated" in message || "audienceDeactivated" in message) {
-    initContextMenus();
-  } else if (message.audienceCreated || message.audienceDeleted) {
+  if (message.audienceActivated ||
+      message.audienceDeactivated ||
+      message.audienceCreated || 
+      message.audienceDeleted) {
     initContextMenus();
   }
 });

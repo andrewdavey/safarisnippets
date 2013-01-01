@@ -1,90 +1,8 @@
-ko.bindingHandlers.dropdown = {
-  init: function(element) {
-    $(".dropdown-toggle", element).dropdown();
-  }
-};
-
 (function() {
 
-  var HomePage = function(app) {
-    return {
-      template: "home",
-      nav: [{ url: false, text: "Sales Safari" }],
-      audiences: app.audiences,
-      
-      activateAudience: function(audience) {
-        audience.isActive(true);
-        app.sendMessage({ activateAudience: audience.name });
-      },
+ 
 
-      deactivateAudience: function(audience) {
-        audience.isActive(false);
-        app.sendMessage({ deactivateAudience: audience.name });
-      },
 
-      deleteAudience: function(audience) {
-        if (confirm("Delete '" + audience.name + "'?")) {
-          app.audiences.remove(audience);
-          app.sendMessage({ deleteAudience: audience.name });
-        }
-      }
-    };
-  };
-  
-  var NewAudiencePage = function(app) {
-    return {
-      template: "new-audience",
-      nav: [{ url: "#home", text: "Sales Safari" }, { url: false, text: "New Audience" }],
-      name: ko.observable(),
-      create: function() {
-        var name = this.name();
-        var data = { name: name, isActive: true };
-        var audience = new AudienceViewModel(data);
-        app.audiences.push(audience);
-        app.audiences.sort(function(a, b) {
-          a = a.name.toLowerCase();
-          b = b.name.toLowerCase();
-          return (a < b) ? -1 : (a > b) ? 1 : 0;
-        });
-        app.sendMessage({ createAudience: data });
-        window.location = "#audience/" + encodeURIComponent(name);
-      },
-      cancel: function() {
-        history.back();
-      }
-    };
-  };
-
-  var AudiencePage = function(app, match) {
-    var audienceName = decodeURIComponent(match[1]);
-    app.sendMessage({ getSnippets: audienceName });
-
-    return {
-      template: "audience",
-      nav: [
-        { url: "#home", text: "Sales Safari" },
-        { url: false, text: audienceName }
-      ],
-      name: audienceName,
-      snippets: app.snippets,
-
-      sortByType: function() {
-        var reversed = this.currentSort === "type";
-        this.currentSort = (reversed ? "-" : "") + "type";
-        this.snippets.sort(function(a,b) { return ((a.type < b.type) ? -1 : (a.type > b.type) ? 1 : 0) * (reversed ? -1 : 1); });
-      },
-
-      deleteSnippet: function(snippet) {
-        app.snippets.splice(snippet.id, 1);
-        app.sendMessage({
-          deleteSnippet: {
-            audienceName: audienceName,
-            snippetIndex: snippet.id
-          }
-        });
-      }
-    };
-  };
 
   var App = function() {
     // app data
@@ -179,18 +97,7 @@ ko.bindingHandlers.dropdown = {
     this.sendMessage({ openLink: href });
   };
 
-  function AudienceViewModel(data, app) {
-    this.name = data.name;
-    this.url = "#audience/" + encodeURIComponent(data.name);
-    this.isActive = ko.observable(data.isActive);
-    this.isActive.subscribe(function(isActive) {
-      if (isActive) {
-        app.sendMessage({ activateAudience: this.name });
-      } else {
-        app.sendMessage({ deactivateAudience: this.name });
-      }
-    }, this);
-  }
+  
 
   ko.applyBindings(new App());
 
