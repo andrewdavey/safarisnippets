@@ -23,6 +23,6 @@
     "scripts": ["db.js", "background.js"]
   },
   "sandbox": {
-    "pages": ["app.html"]
+    "pages": ["app/app.html"]
   }
 }

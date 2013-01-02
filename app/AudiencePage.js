@@ -1,6 +1,22 @@
 var AudiencePage = function(app, match) {
   var audienceName = decodeURIComponent(match[1]);
-  app.sendMessage({ getSnippets: audienceName });
+  var snippets = ko.observableArray();
+  app.sendMessage({ getSnippets: audienceName }, function(response) {
+    snippets(response.snippets.map(function(data, index) {
+      return new SnippetViewModel(data, index);
+    }));
+  });
+
+  function onMessage(event) {
+    if (event.data.snippetAdded) {
+      var snippet = event.data.snippetAdded;
+      var endIndex = snippets().length;
+      snippets.push(new SnippetViewModel(snippet, endIndex));
+      // TODO: re-sort if sorted
+    }
+  }
+
+  window.addEventListener("message", onMessage, false);
 
   return {
     template: "audience",
@@ -12,22 +28,26 @@ var AudiencePage = function(app, match) {
 
     name: audienceName,
 
-    snippets: app.snippets,
+    snippets: snippets,
 
     sortByType: function() {
       var reversed = this.currentSort === "type";
       this.currentSort = (reversed ? "-" : "") + "type";
-      this.snippets.sort(function(a,b) { return ((a.type < b.type) ? -1 : (a.type > b.type) ? 1 : 0) * (reversed ? -1 : 1); });
+      snippets.sort(function(a,b) { return ((a.type < b.type) ? -1 : (a.type > b.type) ? 1 : 0) * (reversed ? -1 : 1); });
     },
 
-    deleteSnippet: function(snippet) {
-      app.snippets.splice(snippet.id, 1);
+    deleteSnippet: function(snippetIndex) {
+      snippets.splice(snippetIndex, 1);
       app.sendMessage({
         deleteSnippet: {
           audienceName: audienceName,
-          snippetIndex: snippet.id
+          snippetIndex: snippetIndex
         }
       });
+    },
+
+    dispose: function() {
+      window.removeEventListener("message", onMessage);
     }
   };
 };

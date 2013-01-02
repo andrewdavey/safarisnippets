@@ -18,30 +18,37 @@ function handleMessage(event) {
       case "createAudience":
         db.createAudience(data, function() {
           chrome.extension.sendMessage({ audienceCreated: true });
+          postMessageToApp({ callback: message._callbackId });
         });
         break;
 
       case "deleteAudience":
         db.deleteAudience(data, function() {
           chrome.extension.sendMessage({ audienceDeleted: true });
+          postMessageToApp({ callback: message._callbackId });
         });
         break;
 
       case "activateAudience":
         db.activateAudience(data, function() {
           chrome.extension.sendMessage({ audienceActivated: true });
+          postMessageToApp({ callback: message._callbackId });
         });
         break;
 
       case "deactivateAudience":
         db.deactivateAudience(data, function() {
           chrome.extension.sendMessage({ audienceDeactivated: true });
+          postMessageToApp({ callback: message._callbackId });
         });
         break;
 
       case "getSnippets":
         db.getAudience(data, function(audience) {
-          postMessageToApp({ snippets: audience.snippets });
+          postMessageToApp({
+            callback: message._callbackId,
+            snippets: audience.snippets
+          });
         });
         break;
 

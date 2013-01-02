@@ -1,11 +1,7 @@
 (function() {
 
   var App = function() {
-    // app data
     this.audiences = ko.observableArray();
-    this.snippets = ko.observableArray();
-
-    // pages
     this.page = ko.observable();
     this.pages = [
       { url: /^#home/, page: HomePage },
@@ -13,6 +9,7 @@
       { url: /^#audience\/(.+)/, page: AudiencePage }
     ];
 
+    this.responseCallbacks = {};
     window.addEventListener("hashchange", this.onHashChange.bind(this), false);
     window.addEventListener("message", this.onMessage.bind(this), false);
   };
@@ -20,29 +17,31 @@
   App.prototype.onHashChange = function() {
     var app = this;
     var page = this.pages
-        .map(function(route) {
-          var match = route.url.exec(location.hash);
-          if (match) {
-            return route.page(app, match);
-          } else {
-            return false;
-          }
-        })
-        .filter(function(page) { return page; })
-        [0];
+      .map(function(route) {
+        var match = route.url.exec(location.hash);
+        if (match) {
+          return route.page(app, match);
+        } else {
+          return false;
+        }
+      })
+      .filter(function(page) { return page; })
+      [0];
+
+    var oldPage = this.page();
+    if (oldPage && typeof oldPage.dispose === "function") {
+      oldPage.dispose();
+    }
+
     this.page(page);
   };
 
   App.prototype.onMessage = function(event) {
     var message = event.data;
-    if ("init" in message) {
-      this.init(event.source, event.data.init.audiences);
-    } else if (message.snippets) {
-      this.updateSnippets(event.data.snippets);
-    } else if (message.snippetAdded) {
-      if (this.page().name === message.snippetAdded.audienceName) {
-        this.snippets.push(this.snippet(message.snippetAdded, this.snippets().length));
-      }
+    if (message.init) {
+      this.init(event.source, message.init.audiences);
+    } else if (message.callback) {
+      this.dispatchCallback(message);
     }
   };
 
@@ -60,23 +59,24 @@
     this.onHashChange();
   };
 
-  App.prototype.sendMessage = function(data) {
-    this.parent.postMessage(data, "*");
-  };
-
-  App.prototype.updateSnippets = function(snippets) {
-    this.snippets(snippets.map(this.snippet));
-  };
-
-  App.prototype.snippet = function(data, index) {
-    var date = new Date(Date.parse(data.time));
-    function pad(number) {
-      return number<10 ? ("0" + number.toString()) : number.toString();
+  App.prototype.dispatchCallback = function(message) {
+    var callback = this.responseCallbacks[message.callback];
+    delete this.responseCallbacks[message.callback];
+    if (callback) {
+      callback(message);
     }
-    data.time = [date.getFullYear(), pad(1+date.getMonth()), pad(date.getDate())].join("-") +
-             " " + pad(date.getHours()) + ":" + pad(date.getMinutes());
-    data.id = index;
-    return data;
+  };
+
+  App.prototype.getSnippets = function(audienceName, callback) {
+    this.sendMessage({ getSnippets: audienceName }, function(response) {
+      callback(response.snippets);
+    });
+  };
+
+  App.prototype.sendMessage = function(data, responseCallback) {
+    data._callbackId = (new Date()).getTime().toString();
+    this.responseCallbacks[data._callbackId] = responseCallback;
+    this.parent.postMessage(data, "*");
   };
 
   App.prototype.anyClick = function(_, event) {
