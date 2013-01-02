@@ -7,18 +7,7 @@ var AudiencePage = function(app, match) {
     }));
   });
 
-  function onMessage(event) {
-    if (event.data.snippetAdded) {
-      var snippet = event.data.snippetAdded;
-      var endIndex = snippets().length;
-      snippets.push(new SnippetViewModel(snippet, endIndex));
-      // TODO: re-sort if sorted
-    }
-  }
-
-  window.addEventListener("message", onMessage, false);
-
-  return {
+  var page = {
     template: "audience",
 
     nav: [
@@ -30,10 +19,47 @@ var AudiencePage = function(app, match) {
 
     snippets: snippets,
 
+    sort: {
+      property: ko.observable(),
+      reversed: ko.observable(false)
+    },
+
     sortByType: function() {
-      var reversed = this.currentSort === "type";
-      this.currentSort = (reversed ? "-" : "") + "type";
-      snippets.sort(function(a,b) { return ((a.type < b.type) ? -1 : (a.type > b.type) ? 1 : 0) * (reversed ? -1 : 1); });
+      this.sortBy("type");
+    },
+
+    sortBySnippet: function() {
+      this.sortBy("text");
+    },
+
+    sortByPageTitle: function() {
+      this.sortBy("pageTitle");
+    },
+
+    sortByTime: function() {
+      this.sortBy("time");
+    },
+
+    sortBy: function(property) {
+      if (this.sort.property() === property) {
+        this.sort.reversed(!this.sort.reversed());
+      } else {
+        this.sort.property(property);
+        this.sort.reversed(false);
+      }
+      this.applySort();
+    },
+
+    applySort: function() {
+      var property = this.sort.property();
+      var reverse = this.sort.reversed() ? -1 : 1;
+      snippets.sort(function(s1, s2) {
+        var v1 = s1[property];
+        var v2 = s2[property];
+        if (typeof v1 === "string") v1 = v1.toLowerCase();
+        if (typeof v2 === "string") v2 = v2.toLowerCase();
+        return ((v1 < v2) ? -1 : (v1 > v2) ? 1 : 0) * reverse;
+      });
     },
 
     deleteSnippet: function(snippetIndex) {
@@ -50,4 +76,17 @@ var AudiencePage = function(app, match) {
       window.removeEventListener("message", onMessage);
     }
   };
+
+  function onMessage(event) {
+    if (event.data.snippetAdded) {
+      var snippet = event.data.snippetAdded;
+      var endIndex = snippets().length;
+      snippets.push(new SnippetViewModel(snippet, endIndex));
+      page.applySort();
+    }
+  }
+
+  window.addEventListener("message", onMessage, false);
+
+  return page;
 };

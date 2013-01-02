@@ -2,6 +2,9 @@
 <html>
   <head>
    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet"/> 
+   <style type="text/css">
+     .sortable { cursor: pointer; }
+   </style>
   </head>
   <body style="padding-top: 10px" data-bind="click: anyClick">
 
@@ -92,10 +95,26 @@
       <table class="table" data-bind="visible: snippets().length">
         <thead>
           <tr>
-            <th class="muted" data-bind="click: sortByType" style="width: 115px">Type</th>
-            <th>Snippet</th>
-            <th style="width: 150px">Page</th>
-            <th class="muted" style="width: 120px">Captured</th>
+            <th class="sortable muted" data-bind="click: sortByType" style="width: 115px">
+              Type
+              <i class="icon icon-chevron-up" data-bind="visible: sort.property() === 'type' && !sort.reversed()"></i>
+              <i class="icon icon-chevron-down" data-bind="visible: sort.property() === 'type' && sort.reversed()"></i>
+            </th>
+            <th class="sortable" data-bind="click: sortBySnippet">
+              Snippet
+              <i class="icon icon-chevron-up" data-bind="visible: sort.property() === 'text' && !sort.reversed()"></i>
+              <i class="icon icon-chevron-down" data-bind="visible: sort.property() === 'text' && sort.reversed()"></i>
+            </th>
+            <th class="sortable" style="width: 150px" data-bind="click: sortByPageTitle">
+              Page
+              <i class="icon icon-chevron-up" data-bind="visible: sort.property() === 'pageTitle' && !sort.reversed()"></i>
+              <i class="icon icon-chevron-down" data-bind="visible: sort.property() === 'pageTitle' && sort.reversed()"></i>
+            </th>
+            <th class="sortable muted" style="width: 120px" data-bind="click: sortByTime">
+              Captured
+              <i class="icon icon-chevron-up" data-bind="visible: sort.property() === 'time' && !sort.reversed()"></i>
+              <i class="icon icon-chevron-down" data-bind="visible: sort.property() === 'time' && sort.reversed()"></i>
+            </th>
             <th></th>
           </tr>
         <tbody data-bind="foreach: snippets">
@@ -107,8 +126,8 @@
               &times; <span data-bind="text: count"></span>
               </span>
             </td>
-            <td><a data-bind="text: page.title, attr: { href: page.url }"></a></td>
-            <td class="muted" data-bind="text: time"></td>
+            <td><a data-bind="text: pageTitle, attr: { href: pageUrl }"></a></td>
+            <td class="muted" data-bind="text: captured"></td>
             <td>
               <a href="#"
                 title="Delete snippet"
