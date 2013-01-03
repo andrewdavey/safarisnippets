@@ -25,6 +25,7 @@ function createContextMenu(audienceName) {
       onclick: createMenuHandlerFunction(audienceName, type)
     });
   });
+
 }
 
 function createMenuHandlerFunction(audienceName, snippetType) {
@@ -78,6 +79,17 @@ chrome.browserAction.onClicked.addListener(function() {
   chrome.tabs.create({url: "tab.html"});
 });
 
+// When scanning a forum topic list most of the interesting text is within hyperlinks.
+// It's hard to select the text from part of a hyperlink.
+// Provide a context menu action to remove href attributes from all <a> tags.
+// User will have to reload the page to restore the links for now.
+chrome.contextMenus.create({
+  title: "Delinkify",
+  contexts: ["page"],
+  onclick: function(info, tab) {
+    chrome.tabs.executeScript(tab.tabId, { file: "delinkify.js" });
+  }
+});
 
 chrome.extension.onMessage.addListener(function(message) {
   if (message.audienceActivated ||
