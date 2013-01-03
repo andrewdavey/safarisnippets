@@ -16,7 +16,7 @@ function createContextMenu(audienceName) {
     title: audienceName,
     contexts: ["selection"]
   });
-  var types = ["Pain", "Recommendation", "Jargon", "Keyword", "World View"];
+  var types = ["Keyword", "Jargon", "Pain", "Recommendation", "World View"];
   types.forEach(function(type) {
     chrome.contextMenus.create({
       parentId: parentMenuId,
